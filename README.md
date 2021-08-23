@@ -40,4 +40,8 @@ If you have valgrind you could also see there are no memory leaks
 ```
 valgrind ./pathing
 ```
+To get rid of the executable
+```
+make clean
+```
 <br /><br />
