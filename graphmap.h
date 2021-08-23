@@ -30,4 +30,6 @@ void freeGraphMap(graphmap A);
 
 void Dijkstra(graphmap A);
 
+void getNeighbors(graphmap A, int r, int c, coord * neighbors);
+
 #endif
