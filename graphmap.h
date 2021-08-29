@@ -4,6 +4,7 @@
 typedef struct coord {
 	int x;
 	int y;
+	int m;
 } coordObj;
 
 typedef coordObj * coord;
@@ -18,7 +19,7 @@ typedef struct graphmap {
 typedef graphmapObj * graphmap;
 
 graphmap newGraphMap(FILE * file_read, int numRows, int numCols, 
-						int startR, int startE, int endR, int endE);
+						char startVal, char endVal);
 
 coord newCoord(int x, int y);
 
@@ -28,8 +29,10 @@ void printMap(FILE* out, graphmap A);
 
 void freeGraphMap(graphmap A);
 
-void Dijkstra(graphmap A);
+void Dijkstra(FILE * file_write, graphmap A);
 
 void getNeighbors(graphmap A, int r, int c, coord * neighbors);
+
+void findPoint(graphmap A, coord toAlter, char toFind);
 
 #endif

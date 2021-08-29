@@ -7,6 +7,7 @@
 int main(){
 	
 	FILE * file_read;
+	FILE * file_write;
 	char * mapName = "map.txt";
 	char line[11];
 
@@ -16,15 +17,23 @@ int main(){
 		exit(1);
 	}
 
+	file_write = fopen("outfile.txt", "w");
+
 	//	(filestream, numRows, numCols, starting x, starting y, ending x, ending y)
-	graphmap map = newGraphMap(file_read, 9, 10, 7, 1, 1, 8);
+	graphmap map = newGraphMap(file_read, 9, 10, 'A', 'B');
+
+	printf("Original Map: \n");
 	printMap(stdout, map);
 
-	Dijkstra(map);
+	printf("\nNew Map: \n");
+	Dijkstra(file_write, map);
+
+
 
 	freeGraphMap(map);
 
 	fclose(file_read);
+	fclose(file_write);
 	
 	return(0);
 }

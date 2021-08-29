@@ -1,3 +1,8 @@
+/*
+TODO: 
+	- Add a*
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +17,7 @@ coord newCoord(int x, int y){
 }
 
 graphmap newGraphMap(FILE * file_read, int numRows, int numCols, 
-						int startR, int startE, int endR, int endE){
+						char startVal, char endVal){
 	graphmap newMap    = malloc(sizeof(graphmapObj));
 
 	newMap->map        = (char **)malloc(9 * sizeof(char *));
@@ -20,11 +25,18 @@ graphmap newGraphMap(FILE * file_read, int numRows, int numCols,
 		newMap->map[i] = (char *)malloc(10 * sizeof(char));
 	}
 
-	newMap->startPoint = newCoord(startR, startE);
-	newMap->endPoint   = newCoord(endR, endE);
+	newMap->startPoint = newCoord(-1, -1);
+	newMap->endPoint   = newCoord(-1, -1);
 	newMap->mapSize    = newCoord(numRows, numCols);
 
 	txtToArray(newMap->map, file_read, newMap->mapSize->x, newMap->mapSize->y);
+
+	findPoint(newMap, newMap->startPoint, startVal);
+	findPoint(newMap, newMap->endPoint, endVal);
+
+	printf("startpoint: x: %d y: %d\n", newMap->startPoint->x, newMap->startPoint->y);
+	printf("endPoint: x: %d y: %d\n", newMap->endPoint->x, newMap->endPoint->y);
+	
 
 	return(newMap);
 }
@@ -43,13 +55,14 @@ void txtToArray(char ** map, FILE * file_read, int row, int col){
 	}
 }
 
-void Dijkstra(graphmap A) {
+void Dijkstra(FILE * file_write, graphmap A) {
 	int row    = A->mapSize->x;
 	int col    = A->mapSize->y;
 	int startX = A->startPoint->x;
 	int startY = A->startPoint->y;
 	int endX   = A->endPoint->x;
 	int endY   = A->endPoint->y;
+	int cnt    = 0;
 
 	// Only works with paths of 99 steps
 	coord dijkstraPath[100];
@@ -60,6 +73,7 @@ void Dijkstra(graphmap A) {
 
 	coord currCoord = newCoord(-1, -1);
 
+	// Initialization
 	for(int i = 0; i < row; i++){
 		for(int j = 0; j < col; j++){
 			distance[i][j] = INT_MAX;
@@ -69,6 +83,7 @@ void Dijkstra(graphmap A) {
 	}
 	distance[startX][startY] = 0;
 
+	// Start Main Loop
 	for(int m = 0; m < row * col; m++){
 		int tmpmin = INT_MAX;
 
@@ -78,35 +93,37 @@ void Dijkstra(graphmap A) {
 			for(int j = 0; j < col; j++){
 				if(distance[i][j] < tmpmin && Q[i][j] != NULL){
 					free(currCoord);			// Free the old one to get the new one
-					tmpmin = distance[i][j];
+					tmpmin	  = distance[i][j];
 					currCoord = newCoord(Q[i][j]->x, Q[i][j]->y);
 				}
 			}
 		}
 
-		// This is being freed twice, fix it.
-		free(Q[currCoord->x][currCoord->y]);	// 'Removed' from list
+		// Remove current Node from List
+		free(Q[currCoord->x][currCoord->y]);
 		Q[currCoord->x][currCoord->y] = NULL;
 
-
+		// If we get to the endPoint
 		if(previous[endX][endY]->x != -1 || (endX == startX && endY	== startY)){
 			int r = endX;
 			int c = endY;
-			int cnt = 0;
+			int tmpr;
+			int tmpc;
 			while(previous[r][c]->x != -1){
 				dijkstraPath[cnt] = newCoord(r, c);
-				r = previous[r][c]->x;
-				c = previous[r][c]->y;
+				tmpr = previous[r][c]->x;
+				tmpc = previous[r][c]->y;
+				r 	 = tmpr;
+				c 	 = tmpc;
 				cnt++;
 			}
 			dijkstraPath[cnt] = newCoord(startX, startY);
 			cnt++;
 
 			// Now have shortest path
-			printf("PATH:\n");
+			fprintf(file_write, "PATH:\n");
 			for(int i = cnt - 1; i >= 0; i--){
-				printf("%d: r: %d c: %d \n", cnt - i, dijkstraPath[i]->x, dijkstraPath[i]->y);
-				//free(dijkstraPath[i]);
+				fprintf(file_write, "%d: r: %d c: %d \n", cnt - i, dijkstraPath[i]->x, dijkstraPath[i]->y);
 			}
 			for(int i = 1; i < cnt - 1; i++){
 				A->map[dijkstraPath[i]->x][dijkstraPath[i]->y] = '*';
@@ -114,22 +131,24 @@ void Dijkstra(graphmap A) {
 			}
 			free(dijkstraPath[0]);
 			free(dijkstraPath[cnt-1]);
+			printMap(file_write, A);
 			printMap(stdout, A);
 			break;
 		}
 		
+		// Get Neighbors of current Node
 		coord * neighbors = (coord *)malloc(8 * sizeof(coord));
 		getNeighbors(A, currCoord->x, currCoord->y, neighbors);
 
-		
+		// Update neighbor distances
 		for(int i = 0; i < 8; i++){
 			if(neighbors[i]->x == -1){
 				continue;
 			}
-			int nX = neighbors[i]->x;
-			int nY = neighbors[i]->y;
-			// Fix this later to have diagonal edge weights cost 1.5 not 1
+			int nX 		  = neighbors[i]->x;
+			int nY 		  = neighbors[i]->y;
 			int totalDist = distance[currCoord->x][currCoord->y] + 1;
+
 			if(totalDist < distance[nX][nY]){
 				distance[nX][nY] = totalDist;
 				free(previous[nX][nY]);
@@ -141,6 +160,10 @@ void Dijkstra(graphmap A) {
 			free(neighbors[i]);
 		}
 		free(neighbors);
+	}
+
+	if(cnt == 0){
+		printf("NO AVAILABLE PATH FROM START TO FINISH.\n");
 	}
 
 	free(currCoord);
@@ -227,7 +250,7 @@ void printMap(FILE* out, graphmap A){
 		for(int j = 0; j < (A->mapSize->y); j++){
 			fprintf(out, "%c", A->map[i][j]);
 		}
-		printf("\n");
+		fprintf(out, "\n");
 	}
 }
 
@@ -251,4 +274,16 @@ void freeGraphMap(graphmap A) {
 
 	free(A);
 	A             = NULL;
+}
+
+void findPoint(graphmap A, coord toAlter, char toFind){
+	for(int i = 0; i < A->mapSize->x; i++){
+		for(int j = 0; j < A->mapSize->y; j++){
+			if(A->map[i][j] == toFind){
+				toAlter->x = i;
+				toAlter->y = j;
+				return;
+			}
+		}
+	}
 }
