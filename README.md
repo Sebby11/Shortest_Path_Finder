@@ -21,12 +21,10 @@ Example Map (map.txt):<br />
 '#' = Wall<br />
 '.' = Floor<br />
 A,B = Start, End<br />
-<br />
-### Algorithms<br />
+### Algorithms
 - Dijkstra's<br />
-- A*<br />
-
-<br />**To Use:**<br />
+- A*
+### Usage
 Run Makefile to compile "Pathing"
 ```
 make pathing
