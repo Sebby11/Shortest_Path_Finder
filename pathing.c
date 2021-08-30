@@ -1,3 +1,12 @@
+/*
+	File: pathing.c
+
+	What: File for testing functions of graphmap.c
+
+	By: Sebastian Medina
+
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

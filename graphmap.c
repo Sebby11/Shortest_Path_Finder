@@ -1,6 +1,12 @@
 /*
-TODO: 
-	- Add a*
+	File: graphmap.c
+
+	What: 'Class' file creating and handling graphmap objects
+
+	By: Sebastian Medina
+
+	TODO: 
+		- Add a*
 */
 
 #include <stdio.h>
@@ -10,6 +16,16 @@ TODO:
 #include "graphmap.h"
 
 coord newCoord(int x, int y){
+	/*
+		Use:
+			Create a new coord object representing a coordinate on a plane
+			or a tuple of size 2.
+
+		Parameters:
+			x - 1st value in coord; representing position on x axis
+			y - 2nd value in coord; representing position on y axis
+	*/
+	
 	coord crd = malloc(sizeof(coordObj));
 	crd->x    = x;
 	crd->y    = y;
@@ -18,6 +34,23 @@ coord newCoord(int x, int y){
 
 graphmap newGraphMap(FILE * file_read, int numRows, int numCols, 
 						char startVal, char endVal){
+	/*
+		Use:
+			Create a new graphmap object containing:
+				- 2d array for a 'map'
+				- starting position
+				- end position
+				- size of 2d array
+
+		Parameters:
+			file_read - input map from a txt file
+			numRows   - number of rows in input map
+			numCols   - number of columns in input map
+			startVal  - start point character
+			endVal    - end point character
+
+	*/
+
 	graphmap newMap    = malloc(sizeof(graphmapObj));
 
 	newMap->map        = (char **)malloc(9 * sizeof(char *));
@@ -42,6 +75,18 @@ graphmap newGraphMap(FILE * file_read, int numRows, int numCols,
 }
 
 void txtToArray(char ** map, FILE * file_read, int row, int col){
+	/*
+		Use:
+			Transform a txt map into a 2d array.
+
+		Parameters:
+			map 	  - empty 2d character array
+			file_read - file where the original txt map is stored
+			row 	  - number of rows in original mamp
+			col 	  - number of columns in original map
+
+	*/
+
 	char line[11];
 
 	for(int i = 0; i < row; i++){
@@ -56,6 +101,17 @@ void txtToArray(char ** map, FILE * file_read, int row, int col){
 }
 
 void Dijkstra(FILE * file_write, graphmap A) {
+	/*
+		Use:
+			Runs Dijkstra's shortest path algorithm to find
+			a path from one point to another.
+
+		Parameters:
+			file_write - file to overwrite the shortest path map
+			A 		   - graphmap containing the map
+
+	*/
+
 	int row    = A->mapSize->x;
 	int col    = A->mapSize->y;
 	int startX = A->startPoint->x;
@@ -67,9 +123,9 @@ void Dijkstra(FILE * file_write, graphmap A) {
 	// Only works with paths of 99 steps
 	coord dijkstraPath[100];
 
-	coord Q[row][col];	// Set of nodes to go through
+	coord Q[row][col];			// Set of nodes to go through
 	coord previous[row][col];	// [i][j] contains its previous node
-	int distance[row][col];	// [i][j] contains its distance from the start
+	int distance[row][col];		// [i][j] contains its distance from the start
 
 	coord currCoord = newCoord(-1, -1);
 
@@ -184,15 +240,26 @@ void Dijkstra(FILE * file_write, graphmap A) {
 // You know as well as I do this shouldn't be hard coded >:(
 void getNeighbors(graphmap A, int r, int c, coord * neighbors){
 	/*
-	Neighbor arrangement:
-	0 - Top
-	1 - Bottom
-	2 - Left
-	3 - Right
-	4 - Top Left
-	5 - Top Right
-	6 - Bottom Left
-	7 - Bottom Right
+		Use:
+			Finds the neighbors of a node in a 2d array, and
+			turns those neighbors into coord objects to be 
+			stored in 'neighbors' coord list.
+
+		Parameters;
+			A 		  - graphmap containing the node you want to find neighbors of
+			r 		  - current row  
+			c 		  - current column
+			neighbors - pointer to coord list where neighbors will be saved
+
+		Neighbor arrangement:
+			0 - Top
+			1 - Bottom
+			2 - Left
+			3 - Right
+			4 - Top Left
+			5 - Top Right
+			6 - Bottom Left
+			7 - Bottom Right
 	*/
 	
 	// Top 
@@ -246,6 +313,15 @@ void getNeighbors(graphmap A, int r, int c, coord * neighbors){
 }
 
 void printMap(FILE* out, graphmap A){
+	/*
+		Use:
+			Print the dungeon map of graphmap A to out stream.
+
+		Parameters:
+			out - stream where the map will be printed
+			A   - graphmap containing the map you want to print
+	*/
+
 	for(int i = 0; i < (A->mapSize->x); i++){
 		for(int j = 0; j < (A->mapSize->y); j++){
 			fprintf(out, "%c", A->map[i][j]);
@@ -255,6 +331,15 @@ void printMap(FILE* out, graphmap A){
 }
 
 void freeGraphMap(graphmap A) {
+	/*
+		Use:
+			Free all memory allocated by a graphmap.
+
+		Parameters:
+			A - graphmap object you'd like to free
+
+	*/
+
 	// Free 2d array
 	for(int i = 0; i < A->mapSize->x; i++){
 		free(A->map[i]);
@@ -276,12 +361,24 @@ void freeGraphMap(graphmap A) {
 	A             = NULL;
 }
 
-void findPoint(graphmap A, coord toAlter, char toFind){
+void findPoint(graphmap A, coord crd, char toFind){
+	/*
+		Use:
+			Find certain character, toFind, in A's 2d array map
+			and enter its coordinates into crd.
+
+		Parameters:
+			A      - graphmap containing the char you want to find on its map
+			crd    - coord object where char's coordinates are stored
+			toFind - the char you'd like to find
+
+	*/
+
 	for(int i = 0; i < A->mapSize->x; i++){
 		for(int j = 0; j < A->mapSize->y; j++){
 			if(A->map[i][j] == toFind){
-				toAlter->x = i;
-				toAlter->y = j;
+				crd->x = i;
+				crd->y = j;
 				return;
 			}
 		}

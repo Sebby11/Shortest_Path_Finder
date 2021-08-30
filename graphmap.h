@@ -1,3 +1,12 @@
+/*
+	File: graphmap.h
+
+	What: Header file for graphmap.c 'class' file
+
+	By: Sebastian Medina
+
+*/
+
 #ifndef _GRAPHMAP_H_INCLUDE_
 #define _GRAPHMAP_H_INCLUDE_
 
