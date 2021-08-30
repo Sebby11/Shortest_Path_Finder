@@ -108,7 +108,7 @@ void Dijkstra(FILE * file_write, graphmap A) {
 
 		Parameters:
 			file_write - file to overwrite the shortest path map
-			A 		   - graphmap containing the map
+			A          - graphmap containing the map
 
 	*/
 
@@ -246,9 +246,9 @@ void getNeighbors(graphmap A, int r, int c, coord * neighbors){
 			stored in 'neighbors' coord list.
 
 		Parameters;
-			A 		  - graphmap containing the node you want to find neighbors of
-			r 		  - current row  
-			c 		  - current column
+			A         - graphmap containing the node you want to find neighbors of
+			r         - current row  
+			c         - current column
 			neighbors - pointer to coord list where neighbors will be saved
 
 		Neighbor arrangement:
