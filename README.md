@@ -6,15 +6,17 @@ Warming up with C for upcoming courses.<br />
 This program takes file input representing a dungeon map then finds the shortest paths from point A to B using various graph algorithms. 
 <br /><br />
 Example Map (map.txt):<br />
-##########<br />
+#########<br />
 #.   .   .   .   .   .   .   B#<br />
 #.   .   .   .   .   .   .   .   #<br />
 #.   .   .   .   .   .   .   .   #<br />
 #.   .   .   .   .   .   .   .   #<br />
 #.   .   .   .   .   .   .   .   #<br />
 #.   .   .   .   .   .   .   .   #<br />
-#A   .   .   .   .   .   .   .   #<br />
-##########<br />
+#A   .   .   .   .   .   .      #<br />
+#########<br />
+**NOTE: some rows floor '.' off to better display in readme**
+<br />
 <br />
 **Key**
 <br /> 
